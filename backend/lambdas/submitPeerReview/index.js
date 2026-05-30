@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
+const crypto = require("crypto");
+
 const {
   DynamoDBClient,
 } = require("@aws-sdk/client-dynamodb");
@@ -20,20 +24,27 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
 
+    // Generate SHA-256 hash for reviewer anonymity
+    const reviewerHash = crypto
+      .createHash("sha256")
+      .update(body.reviewerId)
+      .digest("hex");
+
     const review = {
       reviewId: uuidv4(),
 
       reviewType: "PEER",
 
-      reviewerId: body.reviewerId,
+      // Store hashed reviewer ID instead of raw ID
+      reviewerHash,
 
       employeeId: body.employeeId,
 
       feedback: body.feedback,
 
-      rating: body.rating,
+      rating: Number(body.rating),
 
-      anonymous: body.anonymous,
+      anonymous: true,
 
       createdAt: new Date().toISOString(),
     };
@@ -55,7 +66,16 @@ exports.handler = async (event) => {
 
       body: JSON.stringify({
         success: true,
-        review,
+
+        review: {
+          reviewId: review.reviewId,
+          reviewType: review.reviewType,
+          employeeId: review.employeeId,
+          feedback: review.feedback,
+          rating: review.rating,
+          anonymous: review.anonymous,
+          createdAt: review.createdAt,
+        },
       }),
     };
   } catch (error) {
@@ -71,8 +91,7 @@ exports.handler = async (event) => {
 
       body: JSON.stringify({
         success: false,
-        message:
-          "Failed to submit peer review",
+        message: "Failed to submit peer review",
       }),
     };
   }

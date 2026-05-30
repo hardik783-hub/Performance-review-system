@@ -112,3 +112,36 @@ export async function getEmployeeOKRs(
 
   return response.json();
 }
+
+export async function createReviewCycle(
+  data: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    employees: string[];
+  }
+) {
+  const response = await fetch(
+    `${API_URL}/cycles`,
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
+      body: JSON.stringify(data),
+    }
+  );
+
+  return response.json();
+}
+
+export async function getReviewCycles() {
+  const response = await fetch(
+    `${API_URL}/cycles`
+  );
+
+  return response.json();
+}
