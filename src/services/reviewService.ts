@@ -6,6 +6,12 @@ import {
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL;
 
+function getApiUrl(path: string) {
+  return API_URL
+    ? `${API_URL}${path}`
+    : path;
+}
+
 export async function submitSelfReview(
   data: SelfReviewPayload
 ) {
@@ -27,7 +33,7 @@ export async function submitSelfReview(
 }
 
 export async function submitPeerReview(
-  data: Record<string, any>
+  data: Record<string, unknown>
 ) {
   const response = await fetch(
     `${API_URL}/reviews/peer`,
@@ -48,17 +54,64 @@ export async function submitPeerReview(
 
 export async function getHRAnalytics() {
   const response = await fetch(
-    `${API_URL}/analytics`
+    getApiUrl("/analytics")
   );
 
   return response.json();
+}
+
+export interface ReviewCyclePayload {
+  name: string;
+  startDate: string;
+  endDate: string;
+  employees: string[];
+  status: string;
+}
+
+export async function getReviewCycles() {
+  const response = await fetch(
+    getApiUrl("/cycles")
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to load review cycles");
+  }
+
+  return response.json() as Promise<unknown>;
+}
+
+export async function createReviewCycle(
+  data: ReviewCyclePayload
+) {
+  const response = await fetch(
+    getApiUrl("/cycles"),
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
+      body: JSON.stringify({
+        ...data,
+        cycleName: data.name,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to create review cycle");
+  }
+
+  return response.json() as Promise<unknown>;
 }
 
 
 
 
 export async function submitManagerReview(
-  data: Record<string, any>
+  data: Record<string, unknown>
 ) {
   const response = await fetch(
     `${API_URL}/reviews/manager`,

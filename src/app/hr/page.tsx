@@ -2,17 +2,25 @@
 
 import { useEffect, useState } from "react";
 
-import DashboardLayout from "@/components/layouts/DashboardLayout";
 import StatsCard from "@/components/dashboard/StatsCard";
 import CompletionChart from "@/components/charts/CompletionChart";
+import HRLayout from "@/components/layouts/HRLayout";
 
 import {
   getHRAnalytics,
 } from "@/services/reviewService";
 
+interface HRAnalytics {
+  totalReviews: number;
+  employeesReviewed: number;
+  averageRating: number;
+  topPerformer: string;
+  topPerformerScore: number;
+}
+
 export default function HRDashboard() {
   const [analytics, setAnalytics] =
-    useState<any>(null);
+    useState<HRAnalytics | null>(null);
 
   const [loading, setLoading] =
     useState(true);
@@ -38,26 +46,26 @@ export default function HRDashboard() {
 
   if (loading) {
     return (
-      <DashboardLayout role="hr">
+      <HRLayout>
         <p className="text-white">
           Loading analytics...
         </p>
-      </DashboardLayout>
+      </HRLayout>
     );
   }
 
   if (!analytics) {
     return (
-      <DashboardLayout role="hr">
+      <HRLayout>
         <p className="text-red-500">
           Failed to load analytics
         </p>
-      </DashboardLayout>
+      </HRLayout>
     );
   }
 
   return (
-    <DashboardLayout role="hr">
+    <HRLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-white">
@@ -113,6 +121,6 @@ export default function HRDashboard() {
 
         <CompletionChart />
       </div>
-    </DashboardLayout>
+    </HRLayout>
   );
 }

@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   ClipboardCheck,
   Target,
-  BarChart3,
   Users,
 } from "lucide-react";
 
@@ -34,27 +33,10 @@ const employeeLinks = [
   },
 ];
 
-const hrLinks = [
-  {
-    title: "HR Dashboard",
-    href: "/hr",
-    icon: BarChart3,
-  },
-];
-
-interface SidebarProps {
-  role?: "employee" | "hr" | "manager";
-}
-
-export default function Sidebar({
-  role = "employee",
-}: SidebarProps) {
+export default function Sidebar() {
   const pathname = usePathname();
 
-  const links =
-    role === "hr"
-      ? [...employeeLinks, ...hrLinks]
-      : employeeLinks;
+  const links = employeeLinks;
 
   return (
     <div className="w-64 h-screen bg-zinc-950 border-r border-zinc-800 p-5">
