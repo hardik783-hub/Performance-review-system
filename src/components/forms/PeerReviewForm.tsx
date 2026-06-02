@@ -17,6 +17,11 @@ interface CurrentUser {
 export default function PeerReviewForm() {
   const { employeeId } =
   useEmployee();
+  const [users, setUsers] = useState<CognitoUserSummary[]>(
+    []
+  );
+  const [loadingUsers, setLoadingUsers] =
+    useState(true);
   const [formData, setFormData] = useState({
   reviewerId: employeeId,
   employeeId: "",
@@ -87,7 +92,7 @@ export default function PeerReviewForm() {
 const response =
   await submitPeerReview({
     ...formData,
-    reviewerId: employeeId,
+    reviewerId: formData.reviewerId || employeeId,
   });
 
     console.log(response);

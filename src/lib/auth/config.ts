@@ -36,6 +36,6 @@ export function getRedirectUri(origin: string) {
 export function getPostLogoutRedirectUri(origin: string) {
   return (
     process.env.COGNITO_POST_LOGOUT_REDIRECT_URI ??
-    origin
+    `${origin}/`
   );
 }

@@ -1,5 +1,8 @@
 import {
   CognitoUserSummary,
+  PerformanceReport,
+  ReviewCycle,
+  ReviewCyclePayload,
   SelfReviewPayload,
 } from "@/types/review";
 
@@ -52,20 +55,28 @@ export async function submitPeerReview(
   return response.json();
 }
 
+export async function getCognitoUsers() {
+  const response = await fetch(getApiUrl("/users"), {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to load Cognito users");
+  }
+
+  const data = (await response.json()) as {
+    users?: CognitoUserSummary[];
+  };
+
+  return data.users ?? [];
+}
+
 export async function getHRAnalytics() {
   const response = await fetch(
     getApiUrl("/analytics")
   );
 
   return response.json();
-}
-
-export interface ReviewCyclePayload {
-  name: string;
-  startDate: string;
-  endDate: string;
-  employees: string[];
-  status: string;
 }
 
 export async function getReviewCycles() {
@@ -77,7 +88,13 @@ export async function getReviewCycles() {
     throw new Error("Failed to load review cycles");
   }
 
-  return response.json() as Promise<unknown>;
+  const data = (await response.json()) as
+    | ReviewCycle[]
+    | { cycles?: ReviewCycle[] };
+
+  return Array.isArray(data)
+    ? data
+    : data.cycles ?? [];
 }
 
 export async function createReviewCycle(
@@ -166,38 +183,5 @@ export async function getEmployeeOKRs(
     `${API_URL}/okrs/${employeeId}`
   );
 
-  return response.json();
-}
-
-export async function createReviewCycle(
-  data: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    employees: string[];
-  }
-) {
-  const response = await fetch(
-    `${API_URL}/cycles`,
-    {
-      method: "POST",
-
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-
-      body: JSON.stringify(data),
-    }
-  );
-
-  return response.json();
-}
-
-export async function getReviewCycles() {
-  const response = await fetch(
-    `${API_URL}/cycles`
-  );
-
-  return response.json();
+  return response.json() as Promise<PerformanceReport>;
 }

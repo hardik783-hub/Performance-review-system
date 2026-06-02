@@ -1,5 +1,3 @@
-import Sidebar from "@/components/dashboard/Sidebar";
-import Navbar from "@/components/dashboard/Navbar";
 import SelfReviewForm from "@/components/forms/SelfReviewForm";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 

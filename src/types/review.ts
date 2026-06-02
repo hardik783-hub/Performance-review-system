@@ -14,6 +14,36 @@ export interface SelfReviewPayload {
   rating: number;
 }
 
+export interface PerformanceReport {
+  employeeId: string;
+  selfScore?: number;
+  peerAverage?: number;
+  managerScore?: number;
+  okrScore?: number;
+  finalRating?: number;
+  totalReviews?: number;
+  totalOKRs?: number;
+  performanceStatus?: string;
+}
+
+export interface ReviewCycle {
+  cycleId: string;
+  name?: string;
+  cycleName?: string;
+  startDate: string;
+  endDate: string;
+  employees?: string[];
+  status: string;
+}
+
+export interface ReviewCyclePayload {
+  name: string;
+  startDate: string;
+  endDate: string;
+  employees: string[];
+  status?: string;
+}
+
 export interface CognitoUserSummary {
   id: string;
   username: string;

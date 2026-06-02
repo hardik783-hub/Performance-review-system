@@ -9,10 +9,11 @@ import ReportCard from "@/components/dashboard/ReportCard";
 import {
   getPerformanceReport,
 } from "@/services/reviewService";
+import type { PerformanceReport } from "@/types/review";
 
 export default function ReportPage() {
   const [report, setReport] =
-    useState<any>(null);
+    useState<PerformanceReport | null>(null);
 
   const [loading, setLoading] =
     useState(true);
@@ -75,27 +76,27 @@ export default function ReportPage() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
   <ReportCard
     title="Self Review"
-    value={report.selfScore?.toString()}
+    value={report.selfScore?.toString() ?? "N/A"}
   />
 
   <ReportCard
     title="Peer Average"
-    value={report.peerAverage?.toString()}
+    value={report.peerAverage?.toString() ?? "N/A"}
   />
 
   <ReportCard
     title="Manager Score"
-    value={report.managerScore?.toString()}
+    value={report.managerScore?.toString() ?? "N/A"}
   />
 
   <ReportCard
     title="OKR Score"
-    value={report.okrScore?.toString()}
+    value={report.okrScore?.toString() ?? "N/A"}
   />
 
   <ReportCard
     title="Final Rating"
-    value={report.finalRating?.toString()}
+    value={report.finalRating?.toString() ?? "N/A"}
   />
 </div>
 

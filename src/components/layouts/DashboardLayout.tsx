@@ -8,10 +8,11 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({
   children,
+  role,
 }: DashboardLayoutProps) {
   return (
     <div className="flex bg-black min-h-screen">
-      <Sidebar />
+      <Sidebar role={role} />
 
       <div className="flex-1">
         <Navbar role={role} />

@@ -67,7 +67,7 @@ export default function HRLayout({
       </aside>
 
       <div className="flex-1">
-        <Navbar title="HR Dashboard" />
+        <Navbar role="hr" />
 
         <main className="p-6">
           {children}

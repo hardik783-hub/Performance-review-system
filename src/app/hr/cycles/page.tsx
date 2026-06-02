@@ -8,12 +8,13 @@ import {
   createReviewCycle,
   getReviewCycles,
 } from "@/services/reviewService";
+import type { ReviewCycle } from "@/types/review";
 
 import { toast } from "sonner";
 
 export default function ReviewCyclesPage() {
   const [cycles, setCycles] =
-    useState<any[]>([]);
+    useState<ReviewCycle[]>([]);
 
   const [loading, setLoading] =
     useState(false);
@@ -38,7 +39,14 @@ export default function ReviewCyclesPage() {
   }
 
   useEffect(() => {
-    loadCycles();
+    async function loadInitialCycles() {
+      const data =
+        await getReviewCycles();
+
+      setCycles(data);
+    }
+
+    void loadInitialCycles();
   }, []);
 
   const handleChange = (
@@ -236,7 +244,8 @@ export default function ReviewCyclesPage() {
                     >
                       <td className="p-3">
                         {
-                          cycle.name
+                          cycle.name ??
+                            cycle.cycleName
                         }
                       </td>
 

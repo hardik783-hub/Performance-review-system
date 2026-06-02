@@ -1,5 +1,3 @@
-import Sidebar from "@/components/dashboard/Sidebar";
-import Navbar from "@/components/dashboard/Navbar";
 import StatsCard from "@/components/dashboard/StatsCard";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 

@@ -1,5 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { LogOut } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { useEmployee } from "@/context/EmployeeContext";
 
 interface NavbarProps {
@@ -49,6 +53,20 @@ export default function Navbar({
             EMP103
           </option>
         </select>
+
+        <Button
+          asChild
+          variant="outline"
+          className="border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700 hover:text-white"
+        >
+          <Link
+            href="/api/auth/logout"
+            className="gap-2"
+          >
+            <LogOut size={16} />
+            Logout
+          </Link>
+        </Button>
       </div>
     </div>
   );

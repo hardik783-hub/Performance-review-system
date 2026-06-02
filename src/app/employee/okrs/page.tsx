@@ -1,5 +1,3 @@
-import Sidebar from "@/components/dashboard/Sidebar";
-import Navbar from "@/components/dashboard/Navbar";
 import OKRCard from "@/components/dashboard/OKRCard";
 
 import { okrs } from "@/data/okrs";
