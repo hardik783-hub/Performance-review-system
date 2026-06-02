@@ -8,6 +8,7 @@ import {
   ClipboardCheck,
   Target,
   Users,
+  FileText,
 } from "lucide-react";
 
 const employeeLinks = [
@@ -33,10 +34,32 @@ const employeeLinks = [
   },
 ];
 
-export default function Sidebar() {
+const hrLinks = [
+  {
+    title: "HR Dashboard",
+    href: "/hr",
+    icon: BarChart3,
+  },
+  {
+    title: "Reports",
+    href: "/hr/reports",
+    icon: FileText,
+  },
+];
+
+interface SidebarProps {
+  role?: "employee" | "hr" | "manager";
+}
+
+export default function Sidebar({
+  role = "employee",
+}: SidebarProps) {
   const pathname = usePathname();
 
-  const links = employeeLinks;
+  const links =
+  role === "hr"
+    ? hrLinks
+    : employeeLinks;
 
   return (
     <div className="w-64 h-screen bg-zinc-950 border-r border-zinc-800 p-5">

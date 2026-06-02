@@ -1,408 +1,278 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
-import HRLayout from "@/components/layouts/HRLayout";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
+
 import {
   createReviewCycle,
   getReviewCycles,
 } from "@/services/reviewService";
 
-interface ReviewCycle {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-  employees: string[];
-}
+import { toast } from "sonner";
 
-interface CycleFormData {
-  name: string;
-  startDate: string;
-  endDate: string;
-  employees: string;
-}
+export default function ReviewCyclesPage() {
+  const [cycles, setCycles] =
+    useState<any[]>([]);
 
-const emptyForm: CycleFormData = {
-  name: "",
-  startDate: "",
-  endDate: "",
-  employees: "",
-};
+  const [loading, setLoading] =
+    useState(false);
 
-export default function HRCyclesPage() {
-  const [cycles, setCycles] = useState<ReviewCycle[]>([]);
   const [formData, setFormData] =
-    useState<CycleFormData>(emptyForm);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+    useState({
+      name: "",
+      startDate: "",
+      endDate: "",
+      employees: "",
+    });
 
-  async function loadCycles(
-    showLoading = false
-  ) {
+  async function loadCycles() {
     try {
-      if (showLoading) {
-        setLoading(true);
-      }
+      const data =
+        await getReviewCycles();
 
-      const data = await getReviewCycles();
-
-      setCycles(normalizeCycles(data));
+      setCycles(data);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load review cycles");
-    } finally {
-      setLoading(false);
     }
   }
 
   useEffect(() => {
-    let ignore = false;
-
-    async function fetchCycles() {
-      try {
-        const data = await getReviewCycles();
-
-        if (!ignore) {
-          setCycles(normalizeCycles(data));
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load review cycles");
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchCycles();
-
-    return () => {
-      ignore = true;
-    };
+    loadCycles();
   }, []);
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<
+      HTMLInputElement
+    >
   ) => {
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value,
+      [e.target.name]:
+        e.target.value,
     });
   };
 
   const handleSubmit = async (
-    event: React.FormEvent
+    e: React.FormEvent
   ) => {
-    event.preventDefault();
-
-    const employees = parseEmployees(
-      formData.employees
-    );
+    e.preventDefault();
 
     try {
-      setSubmitting(true);
+      setLoading(true);
 
       await createReviewCycle({
         name: formData.name,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        employees,
-        status: "ACTIVE",
+
+        startDate:
+          formData.startDate,
+
+        endDate:
+          formData.endDate,
+
+        employees:
+          formData.employees
+            .split(",")
+            .map((emp) =>
+              emp.trim()
+            ),
       });
 
-      toast.success("Review cycle created");
-      setFormData(emptyForm);
+      toast.success(
+        "Review cycle created"
+      );
+
+      setFormData({
+        name: "",
+        startDate: "",
+        endDate: "",
+        employees: "",
+      });
+
       await loadCycles();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create review cycle");
+
+      toast.error(
+        "Failed to create cycle"
+      );
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <HRLayout>
-      <div className="space-y-6">
+    <DashboardLayout role="hr">
+      <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-white">
             Review Cycles
           </h1>
 
-          <p className="mt-1 text-zinc-400">
-            Create and manage review cycles
+          <p className="text-zinc-400">
+            Create and manage
+            review cycles
           </p>
         </div>
 
-        <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-5 text-xl font-semibold text-white">
+        {/* Create Cycle Form */}
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
             Create Review Cycle
           </h2>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={
+              handleSubmit
+            }
             className="space-y-4"
           >
             <input
+              type="text"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
               placeholder="Cycle Name"
+              value={formData.name}
+              onChange={
+                handleChange
+              }
+              className="w-full p-3 rounded-xl bg-zinc-800 text-white"
               required
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-800 p-4 text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
             />
 
             <input
               type="date"
               name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
+              value={
+                formData.startDate
+              }
+              onChange={
+                handleChange
+              }
+              className="w-full p-3 rounded-xl bg-zinc-800 text-white"
               required
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-800 p-4 text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
             />
 
             <input
               type="date"
               name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
+              value={
+                formData.endDate
+              }
+              onChange={
+                handleChange
+              }
+              className="w-full p-3 rounded-xl bg-zinc-800 text-white"
               required
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-800 p-4 text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
             />
 
             <input
+              type="text"
               name="employees"
-              value={formData.employees}
-              onChange={handleChange}
               placeholder="EMP101, EMP102, EMP103"
+              value={
+                formData.employees
+              }
+              onChange={
+                handleChange
+              }
+              className="w-full p-3 rounded-xl bg-zinc-800 text-white"
               required
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-800 p-4 text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
             />
 
             <button
               type="submit"
-              disabled={submitting}
-              className="rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl text-white"
             >
-              {submitting
+              {loading
                 ? "Creating..."
                 : "Create Cycle"}
             </button>
           </form>
-        </section>
+        </div>
 
-        <section className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
-          <div className="border-b border-zinc-800 p-6">
-            <h2 className="text-xl font-semibold text-white">
-              Existing Cycles
-            </h2>
-          </div>
+        {/* Existing Cycles */}
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Existing Cycles
+          </h2>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left">
-              <thead className="text-sm text-zinc-400">
-                <tr className="border-b border-zinc-800">
-                  <th className="px-6 py-4 font-medium">
+            <table className="w-full text-left text-zinc-300">
+              <thead>
+                <tr className="border-b border-zinc-700">
+                  <th className="p-3">
                     Name
                   </th>
-                  <th className="px-6 py-4 font-medium">
+
+                  <th className="p-3">
                     Start
                   </th>
-                  <th className="px-6 py-4 font-medium">
+
+                  <th className="p-3">
                     End
                   </th>
-                  <th className="px-6 py-4 font-medium">
+
+                  <th className="p-3">
                     Status
                   </th>
-                  <th className="px-6 py-4 font-medium">
+
+                  <th className="p-3">
                     Employees
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-zinc-800 text-sm text-zinc-300">
-                {loading && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-6 py-5 text-zinc-400"
+              <tbody>
+                {cycles.map(
+                  (cycle) => (
+                    <tr
+                      key={
+                        cycle.cycleId
+                      }
+                      className="border-b border-zinc-800"
                     >
-                      Loading cycles...
-                    </td>
-                  </tr>
-                )}
+                      <td className="p-3">
+                        {
+                          cycle.name
+                        }
+                      </td>
 
-                {!loading && cycles.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-6 py-5 text-zinc-400"
-                    >
-                      No review cycles found.
-                    </td>
-                  </tr>
-                )}
+                      <td className="p-3">
+                        {
+                          cycle.startDate
+                        }
+                      </td>
 
-                {!loading &&
-                  cycles.map((cycle) => (
-                    <tr key={cycle.id}>
-                      <td className="px-6 py-4 text-white">
-                        {cycle.name}
+                      <td className="p-3">
+                        {
+                          cycle.endDate
+                        }
                       </td>
-                      <td className="px-6 py-4">
-                        {cycle.startDate}
+
+                      <td className="p-3">
+                        {
+                          cycle.status
+                        }
                       </td>
-                      <td className="px-6 py-4">
-                        {cycle.endDate}
-                      </td>
-                      <td className="px-6 py-4">
-                        {cycle.status}
-                      </td>
-                      <td className="px-6 py-4">
-                        {cycle.employees.length}
+
+                      <td className="p-3">
+                        {
+                          cycle
+                            .employees
+                            ?.length
+                        }
                       </td>
                     </tr>
-                  ))}
+                  )
+                )}
               </tbody>
             </table>
           </div>
-        </section>
+        </div>
       </div>
-    </HRLayout>
-  );
-}
-
-function normalizeCycles(data: unknown) {
-  const rawCycles = getCycleArray(data);
-
-  return rawCycles.map((cycle, index) => {
-    const employees = getEmployees(cycle);
-    const name =
-      getString(cycle, ["name", "cycleName"]) ||
-      `Review Cycle ${index + 1}`;
-
-    return {
-      id:
-        getString(cycle, ["id", "cycleId"]) ||
-        `${name}-${index}`,
-      name,
-      startDate:
-        getString(cycle, ["startDate", "start"]) ||
-        "-",
-      endDate:
-        getString(cycle, ["endDate", "end"]) ||
-        "-",
-      status:
-        getString(cycle, ["status"]) ||
-        "ACTIVE",
-      employees,
-    };
-  });
-}
-
-function getCycleArray(data: unknown) {
-  if (Array.isArray(data)) {
-    return data.filter(isRecord);
-  }
-
-  if (!isRecord(data)) {
-    return [];
-  }
-
-  const cycles = data.cycles ?? data.Items;
-
-  return Array.isArray(cycles)
-    ? cycles.filter(isRecord)
-    : [];
-}
-
-function getEmployees(
-  cycle: Record<string, unknown>
-) {
-  const value =
-    cycle.employees ??
-    cycle.employeeIds ??
-    cycle.assignedEmployees;
-
-  if (Array.isArray(value)) {
-    return value
-      .map((item) =>
-        typeof item === "string"
-          ? item
-          : getDynamoString(item)
-      )
-      .filter(Boolean);
-  }
-
-  if (typeof value === "string") {
-    return parseEmployees(value);
-  }
-
-  if (
-    isRecord(value) &&
-    Array.isArray(value.L)
-  ) {
-    return value.L
-      .map(getDynamoString)
-      .filter(Boolean);
-  }
-
-  return [];
-}
-
-function parseEmployees(value: string) {
-  return value
-    .split(",")
-    .map((employee) => employee.trim())
-    .filter(Boolean);
-}
-
-function getString(
-  source: Record<string, unknown>,
-  keys: string[]
-) {
-  for (const key of keys) {
-    const value = source[key];
-
-    if (typeof value === "string") {
-      return value;
-    }
-
-    const dynamoValue = getDynamoString(value);
-
-    if (dynamoValue) {
-      return dynamoValue;
-    }
-  }
-
-  return "";
-}
-
-function getDynamoString(value: unknown) {
-  if (!isRecord(value)) {
-    return "";
-  }
-
-  if (typeof value.S === "string") {
-    return value.S;
-  }
-
-  if (typeof value.N === "string") {
-    return value.N;
-  }
-
-  return "";
-}
-
-function isRecord(
-  value: unknown
-): value is Record<string, unknown> {
-  return (
-    typeof value === "object" &&
-    value !== null
+    </DashboardLayout>
   );
 }

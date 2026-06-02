@@ -2,19 +2,23 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useEmployee } from "@/context/EmployeeContext";
 
 import { submitSelfReview } from "@/services/reviewService";
 
 export default function SelfReviewForm() {
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
-    employeeId: "EMP101",
-    achievements: "",
-    strengths: "",
-    improvements: "",
-    rating: 3,
-  });
+  const { employeeId } =
+  useEmployee();
+
+const [formData, setFormData] = useState({
+  employeeId,
+  achievements: "",
+  strengths: "",
+  improvements: "",
+  rating: 3,
+});
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -39,7 +43,10 @@ export default function SelfReviewForm() {
       setLoading(true);
 
       const response =
-        await submitSelfReview(formData);
+  await submitSelfReview({
+    ...formData,
+    employeeId,
+  });
 
       console.log(response);
 
@@ -49,12 +56,12 @@ export default function SelfReviewForm() {
 
       // Optional: Reset form after submission
       setFormData({
-        employeeId: "EMP101",
-        achievements: "",
-        strengths: "",
-        improvements: "",
-        rating: 3,
-      });
+  employeeId,
+  achievements: "",
+  strengths: "",
+  improvements: "",
+  rating: 3,
+});
     } catch (error) {
       console.error(error);
 
@@ -69,6 +76,9 @@ export default function SelfReviewForm() {
       <h2 className="text-2xl font-bold text-white mb-6">
         Self Review
       </h2>
+      <p className="text-zinc-400 mb-4">
+        Current Employee: {employeeId}
+      </p>
 
       <form
         onSubmit={handleSubmit}

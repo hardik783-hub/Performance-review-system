@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import { useEmployee } from "@/context/EmployeeContext";
 import {
   getCognitoUsers,
   submitPeerReview,
@@ -15,18 +15,15 @@ interface CurrentUser {
 }
 
 export default function PeerReviewForm() {
-  const [users, setUsers] = useState<CognitoUserSummary[]>(
-    []
-  );
-  const [loadingUsers, setLoadingUsers] = useState(true);
-
+  const { employeeId } =
+  useEmployee();
   const [formData, setFormData] = useState({
-    reviewerId: "",
-    employeeId: "",
-    feedback: "",
-    rating: 3,
-    anonymous: true,
-  });
+  reviewerId: employeeId,
+  employeeId: "",
+  feedback: "",
+  rating: 3,
+  anonymous: true,
+});
 
   useEffect(() => {
     async function loadReviewContext() {
@@ -87,8 +84,11 @@ export default function PeerReviewForm() {
   e.preventDefault();
 
   try {
-    const response =
-      await submitPeerReview(formData);
+const response =
+  await submitPeerReview({
+    ...formData,
+    reviewerId: employeeId,
+  });
 
     console.log(response);
 
@@ -109,6 +109,9 @@ export default function PeerReviewForm() {
       <h2 className="text-2xl font-bold text-white mb-6">
         Peer Review
       </h2>
+      <p className="text-zinc-400 mb-4">
+        Current Reviewer: {employeeId}
+      </p>
 
       <form
         onSubmit={handleSubmit}

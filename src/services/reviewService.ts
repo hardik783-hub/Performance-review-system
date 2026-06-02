@@ -169,18 +169,35 @@ export async function getEmployeeOKRs(
   return response.json();
 }
 
-export async function getCognitoUsers() {
-  const response = await fetch("/api/users", {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to load Cognito users");
+export async function createReviewCycle(
+  data: {
+    name: string;
+    startDate: string;
+    endDate: string;
+    employees: string[];
   }
+) {
+  const response = await fetch(
+    `${API_URL}/cycles`,
+    {
+      method: "POST",
 
-  const data = (await response.json()) as {
-    users: CognitoUserSummary[];
-  };
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
 
-  return data.users;
+      body: JSON.stringify(data),
+    }
+  );
+
+  return response.json();
+}
+
+export async function getReviewCycles() {
+  const response = await fetch(
+    `${API_URL}/cycles`
+  );
+
+  return response.json();
 }

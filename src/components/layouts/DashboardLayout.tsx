@@ -14,7 +14,7 @@ export default function DashboardLayout({
       <Sidebar />
 
       <div className="flex-1">
-        <Navbar />
+        <Navbar role={role} />
 
         <div className="p-6">
           {children}
